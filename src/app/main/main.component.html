@@ -1,0 +1,12 @@
+<div>
+  <div class="row inputs" >
+    <input type="text" #username class="input" placeholder="Introdu numele de utilizator">
+    <input type="password" #password class="input" placeholder="Introdu parola">
+  </div>
+  <form class="form-inline inputs">
+    <div class="row buttons">
+      <button (click)="createUser(username.value,password.value)" class="btn btn-outline-success col-md-2 offset-md-1" type="button">Inregistrare</button>
+      <!-- <button (click)="login(username.value,password.value)" class="btn btn-outline-success col-md-2 offset-md-1" type="button">Autentificare</button> -->
+    </div>
+  </form>
+</div>
