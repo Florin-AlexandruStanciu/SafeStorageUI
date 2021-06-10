@@ -1,12 +1,34 @@
 <div>
-  <div class="row inputs" >
+  <!-- <div class="row" >
     <input type="text" #username class="input" placeholder="Introdu numele de utilizator">
     <input type="password" #password class="input" placeholder="Introdu parola">
-  </div>
-  <form class="form-inline inputs">
-    <div class="row buttons">
-      <button (click)="createUser(username.value,password.value)" class="btn btn-outline-success col-md-2 offset-md-1" type="button">Inregistrare</button>
-      <!-- <button (click)="login(username.value,password.value)" class="btn btn-outline-success col-md-2 offset-md-1" type="button">Autentificare</button> -->
+  </div> -->
+
+    <div class="row top-buttons">
+      <button (click)="openModal('signup')" class="btn btn btn-primary col-md-2" type="button">
+        Inregistrare</button>
+      <button (click)="openModal('login')" class="btn btn btn-primary col-md-2 offset-md-1" type="button">
+        Autentificare</button>
     </div>
-  </form>
+
+
+<!-- Modal -->
+<div *ngIf='modalOpen'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >{{modalMode==='signup'? 'Inregistrare' : 'Autentificare'}}</h5>
+        <button (click)="closeModal()" type="button" class="btn-close" aria-label="Inchide"></button>
+      </div>
+      <div [formGroup]="modalForm" class="form-group inputs">
+        <input formControlName="username" type="text"  class="input" placeholder="Introdu numele de utilizator">
+        <input formControlName="password" type="password" class="input" placeholder="Introdu parola">
+      </div>
+      <div class="modal-footer">
+        <button (click)="modalConfirm()" type="button" class="btn btn-primary">{{modalMode==='signup'? 'Inregistreaza-te' : 'Autentifica-te'}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
