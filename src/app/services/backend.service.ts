@@ -14,6 +14,10 @@ export class BackendService {
     }
 
     login(credentials:any): Observable<any>{
-      return this.httpclient.post("https://localhost:8080/api/auth/login",credentials);
+      return this.httpclient.post("https://localhost:8080/safe-storage/auth/authenticate",credentials);
+    }
+
+    getStash(password:string){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash",password);
     }
 }

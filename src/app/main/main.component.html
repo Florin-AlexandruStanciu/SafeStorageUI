@@ -1,14 +1,16 @@
 <div>
-  <!-- <div class="row" >
-    <input type="text" #username class="input" placeholder="Introdu numele de utilizator">
-    <input type="password" #password class="input" placeholder="Introdu parola">
-  </div> -->
-
     <div class="row top-buttons">
-      <button (click)="openModal('signup')" class="btn btn btn-primary col-md-2" type="button">
+      <button *ngIf='!isLoggedIn' (click)="openModal('signup')" class="btn btn btn-primary col-md-2" type="button">
         Inregistrare</button>
-      <button (click)="openModal('login')" class="btn btn btn-primary col-md-2 offset-md-1" type="button">
+      <button *ngIf='!isLoggedIn' (click)="openModal('login')" class="btn btn btn-primary col-md-2 offset-md-1" type="button">
         Autentificare</button>
+        <button *ngIf='isLoggedIn' (click)="logout()" class="btn btn btn-danger col-md-2 offset-md-1" type="button">
+          Deconectare</button>
+    </div >
+
+    <div *ngIf='isLoggedIn'>
+      <button  *ngFor="let credentials of stash" class="btn btn btn-primary" type="button">
+        {{credentials.site}}</button>
     </div>
 
 
