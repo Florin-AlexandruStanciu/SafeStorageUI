@@ -24,4 +24,8 @@ export class BackendService {
     saveCredentials(credentials:any,password:string){
       return this.httpclient.post("https://localhost:8080/safe-storage/stash/create",{masterPassword:password,credentials:credentials},{responseType:'text'});
     }
+
+    deleteCredentials(id:number){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/delete",id,{responseType:'text'});
+    }
 }
