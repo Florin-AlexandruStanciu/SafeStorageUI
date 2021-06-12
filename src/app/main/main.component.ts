@@ -1,4 +1,3 @@
-import { element } from 'protractor';
 import { BackendService } from '../services/backend.service';
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
@@ -14,7 +13,7 @@ export class MainComponent implements OnInit {
 
   modalOpen=false;
   modalMode='signup';
-  modalForm: FormGroup;
+  signupLoginForm: FormGroup;
   isLoggedIn = false;
   token = '';
   stash : any;
@@ -28,10 +27,28 @@ export class MainComponent implements OnInit {
       this.isLoggedIn = true;
       this.refreshStash();
     }
-    this.modalForm= new FormGroup({
+    this.signupLoginForm= new FormGroup({
       username: new FormControl(''),
       password: new FormControl('')
     })
+  }
+
+  saveCredentials(){
+    this.backend.saveCredentials(
+      {
+        site:"",
+        username:"User34",
+        password:"passwX"
+      },
+      this.localstorage.retrieve('password')
+    ).subscribe(data => {
+      this.toastr.info(data);
+      this.refreshStash();
+    },
+    error=> {
+      this.toastr.error(error.error);
+    }
+    );
   }
 
   getStash(){
@@ -40,6 +57,11 @@ export class MainComponent implements OnInit {
         console.log(response);
       }
     );
+  }
+
+
+  revealCredentioals(credentials:any){
+    console.log(credentials);
   }
 
   closeModal(){
@@ -52,7 +74,7 @@ export class MainComponent implements OnInit {
   }
 
   modalConfirm(){
-    let credentials = this.modalForm.value;
+    let credentials = this.signupLoginForm.value;
     if(this.modalMode ==='signup'){
       this.createUser(credentials);
     } else {
@@ -95,7 +117,7 @@ export class MainComponent implements OnInit {
           this.closeModal();
         },
       error => {
-        this.modalForm.markAsDirty();
+        this.signupLoginForm.markAsDirty();
         this.toastr.error(error.error);
       }
     )

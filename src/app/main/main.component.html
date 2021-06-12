@@ -9,12 +9,12 @@
     </div >
 
     <div *ngIf='isLoggedIn'>
-      <button  *ngFor="let credentials of stash" class="btn btn btn-primary" type="button">
-        {{credentials.site}}</button>
+      <button  *ngFor="let credentials of stash" (click)="saveCredentials()" class="btn btn btn-primary" type="button">
+        {{credentials.site ? credentials.site : 'fara nume'}}</button>
     </div>
 
 
-<!-- Modal -->
+<!--signup/login Modal -->
 <div *ngIf='modalOpen'>
   <div class="modal-dialog">
     <div class="modal-content">
@@ -22,7 +22,7 @@
         <h5 class="modal-title" >{{modalMode==='signup'? 'Inregistrare' : 'Autentificare'}}</h5>
         <button (click)="closeModal()" type="button" class="btn-close" aria-label="Inchide"></button>
       </div>
-      <div [formGroup]="modalForm" class="form-group inputs">
+      <div [formGroup]="signupLoginForm" class="form-group inputs">
         <input formControlName="username" type="text"  class="input" placeholder="Introdu numele de utilizator">
         <input formControlName="password" type="password" class="input" placeholder="Introdu parola">
       </div>

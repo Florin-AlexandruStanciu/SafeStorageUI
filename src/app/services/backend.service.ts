@@ -20,4 +20,8 @@ export class BackendService {
     getStash(password:string){
       return this.httpclient.post("https://localhost:8080/safe-storage/stash",password);
     }
+
+    saveCredentials(credentials:any,password:string){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/create",{masterPassword:password,credentials:credentials},{responseType:'text'});
+    }
 }
