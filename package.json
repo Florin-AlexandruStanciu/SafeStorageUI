@@ -23,7 +23,8 @@
     "bootstrap": "^5.0.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "ng-block-ui": "^3.0.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1002.0",

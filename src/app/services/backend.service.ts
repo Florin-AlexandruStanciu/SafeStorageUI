@@ -28,4 +28,8 @@ export class BackendService {
     deleteCredentials(id:number){
       return this.httpclient.post("https://localhost:8080/safe-storage/stash/delete",id,{responseType:'text'});
     }
+
+    changePassword(oldPassword:string,newPassword:string){
+      return this.httpclient.post("https://localhost:8080/safe-storage/changePassword",{oldPassword:oldPassword,newPassword:newPassword},{responseType:'text'});
+    }
 }

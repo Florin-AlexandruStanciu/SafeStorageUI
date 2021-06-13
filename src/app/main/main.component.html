@@ -1,100 +1,129 @@
 <div>
-    <div class="row top-buttons">
-      <button *ngIf='!isLoggedIn' (click)="openAuthModal('signup')" class="btn btn-primary col-md-2" type="button">
-        Inregistrare</button>
-      <button *ngIf='!isLoggedIn' (click)="openAuthModal('login')" class="btn btn-primary col-md-2 offset-md-1" type="button">
-        Autentificare</button>
-        <button *ngIf='isLoggedIn' (click)="logout()" class="btn btn-danger col-md-2 offset-md-1" type="button">
-          Deconectare</button>
-    </div >
+  <div class="row top-buttons">
+    <button *ngIf='!isLoggedIn' (click)="openAuthModal('signup')" class="btn btn-primary col-md-2" type="button">
+      Inregistrare</button>
+    <button *ngIf='!isLoggedIn' (click)="openAuthModal('login')" class="btn btn-primary col-md-2 offset-md-1"
+      type="button">
+      Autentificare</button>
+    <button *ngIf='isLoggedIn' (click)="logout()" class="btn btn-danger col-md-2 offset-md-1" type="button">
+      Deconectare</button>
+  </div>
 
-    <div *ngIf='isLoggedIn'>
-      <button  (click)="openSaveCredModal()" class="btn btn-primary" type="button">
-        Salveaza Credentiale Noi</button>
-    </div>
+  <div *ngIf='isLoggedIn'>
+    <button (click)="openSaveCredModal()" class="btn btn-primary" type="button">
+      Salveaza Credentiale Noi</button>
+    <button (click)="openChangePasswordModal()" class="btn btn-primary" type="button">
+      schimba</button>
+  </div>
 
-    <div *ngIf='isLoggedIn'>
-      <button  *ngFor="let credentials of stash" (click)="openViewCredModal(credentials)" class="btn btn-primary" type="button">
-        {{credentials.site ? credentials.site : 'fara nume'}}</button>
-    </div>
+  <div *ngIf='isLoggedIn'>
+    <button *ngFor="let credentials of stash" (click)="openViewCredModal(credentials)" class="btn btn-primary"
+      type="button">
+      {{credentials.site ? credentials.site : 'fara nume'}}</button>
+  </div>
 
 
-<!--credentials Modal -->
-<div *ngIf='credModalOpen'>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" >Credentiale</h5>
-        <button (click)="closeCredModal()" type="button" class="btn-close" aria-label="Inchide"></button>
-      </div>
-      <div *ngIf='credModalMode==="create"' [formGroup]="credForm" class="form-group inputs">
-        <input formControlName="site" type="text"  class="input" placeholder="Titlu">
+  <!--credentials Modal -->
+  <div *ngIf='credModalOpen'>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Credentiale</h5>
+          <button (click)="closeCredModal()" type="button" class="btn-close" aria-label="Inchide"></button>
+        </div>
+        <div *ngIf='credModalMode==="create"' [formGroup]="credForm" class="form-group inputs">
+          <input formControlName="site" type="text" class="input" placeholder="Titlu">
 
-        <div class="input">
-          <input formControlName="username" class="col-md-10"
-            [type]="revealUser? 'text': 'password'" placeholder="Nume de utilizator">
+          <div class="input">
+            <input formControlName="username" class="col-md-10" [type]="revealUser? 'text': 'password'"
+              placeholder="Nume de utilizator">
             <button (click)="revealUserSwitch()" type="button" class='col-md-2 btn-primary'>
-            Afisaza</button>
+              Afisaza</button>
+          </div>
+
+          <div class="input">
+            <input formControlName="password" class="col-md-10" [type]="revealPass? 'text': 'password'"
+              placeholder="Parola" [type]="revealPass? 'text': 'password'">
+            <button (click)="revealPassSwitch()" type="button" class='col-md-2 btn-primary'>
+              Afisaza</button>
+          </div>
         </div>
 
-        <div>
-          <input formControlName="password" class="col-md-10" [type]="revealPass? 'text': 'password'" placeholder="Parola"
-            [type]="revealPass? 'text': 'password'">
-          <button (click)="revealPassSwitch()" type="button" class='col-md-2 btn-primary'>
-            Afisaza</button>
+        <div *ngIf='credModalMode==="view"' [formGroup]="credForm" class="form-group inputs">
+          <input class="input" formControlName="site" type='text' [attr.disabled]='credModalMode==="view"'>
+          <div class="input">
+            <input class='col-md-8' formControlName="username" [type]="revealUser? 'text': 'password'"
+              [attr.disabled]='credModalMode==="view"'>
+
+            <button (click)="revealUserSwitch()" type="button" class='col-md-2 btn-primary'>
+              Afisaza</button>
+
+            <button [cdkCopyToClipboard]='credForm.value.username' type="button" class='col-md-2 btn-primary'>
+              Copiaza</button>
+          </div>
+
+          <div class="input">
+            <input class='col-md-8' formControlName="password" [type]="revealPass? 'text': 'password'"
+              [attr.disabled]='credModalMode==="view"'>
+
+            <button (click)="revealPassSwitch()" type="button" class='col-md-2 btn-primary'>
+              Afisaza</button>
+
+            <button [cdkCopyToClipboard]='credForm.value.password' type="button" class='col-md-2 btn-primary'>
+              Copiaza</button>
+          </div>
         </div>
-      </div>
 
-      <div *ngIf='credModalMode==="view"' [formGroup]="credForm" class="form-group inputs" >
-        <input class="input" formControlName="site" type='text'[attr.disabled] = 'credModalMode==="view"'>
-        <div class="input">
-          <input class='col-md-8' formControlName="username" [type]="revealUser? 'text': 'password'"
-            [attr.disabled] = 'credModalMode==="view"'>
-
-          <button (click)="revealUserSwitch()" type="button" class='col-md-2 btn-primary'>
-            Afisaza</button>
-
-          <button [cdkCopyToClipboard]='credForm.value.username' type="button" class='col-md-2 btn-primary'>
-            Copiaza</button>
+        <div class="modal-footer">
+          <button (click)="credModalConfirm()" type="button" class="btn btn-primary">{{credModalMode==='create'?
+            'Salveaza' : 'Modifica'}}</button>
+          <button (click)="deleteCredentials(credForm.value.id)" *ngIf='credModalMode==="view"' type="button"
+            class="btn btn-danger">Sterge</button>
         </div>
-
-        <div class="input">
-          <input class='col-md-8' formControlName="password" [type]="revealPass? 'text': 'password'"
-            [attr.disabled] = 'credModalMode==="view"'>
-
-          <button (click)="revealPassSwitch()" type="button" class='col-md-2 btn-primary'>
-            Afisaza</button>
-
-          <button [cdkCopyToClipboard]='credForm.value.password' type="button" class='col-md-2 btn-primary'>
-            Copiaza</button>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button (click)="credModalConfirm()" type="button" class="btn btn-primary">{{credModalMode==='create'? 'Salveaza' : 'Modifica'}}</button>
-        <button (click)="deleteCredentials(credForm.value.id)" *ngIf='credModalMode==="view"' type="button" class="btn btn-danger">Sterge</button>
       </div>
     </div>
   </div>
-</div>
 
-<!--signup/login Modal -->
-<div *ngIf='authModalOpen'>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" >{{authModalMode==='signup'? 'Inregistrare' : 'Autentificare'}}</h5>
-        <button (click)="closeAuthModal()" type="button" class="btn-close" aria-label="Inchide"></button>
-      </div>
-      <div [formGroup]="authForm" class="form-group inputs">
-        <input formControlName="username" type="text"  class="input" placeholder="Introdu numele de utilizator">
-        <input formControlName="password" type="password" class="input" placeholder="Introdu parola">
-      </div>
-      <div class="modal-footer">
-        <button (click)="authModalConfirm()" type="button" class="btn btn-primary">{{authModalMode==='signup'? 'Inregistreaza-te' : 'Autentifica-te'}}</button>
+  <!--signup/login Modal -->
+  <div *ngIf='authModalOpen'>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{authModalMode==='signup'? 'Inregistrare' : 'Autentificare'}}</h5>
+          <button (click)="closeAuthModal()" type="button" class="btn-close" aria-label="Inchide"></button>
+        </div>
+        <div [formGroup]="authForm" class="form-group inputs">
+          <input formControlName="username" type="text" class="input" placeholder="Introdu numele de utilizator">
+          <input formControlName="password" type="password" class="input" placeholder="Introdu parola">
+        </div>
+        <div class="modal-footer">
+          <button (click)="authModalConfirm()" type="button" class="btn btn-primary">{{authModalMode==='signup'?
+            'Inregistreaza-te' : 'Autentifica-te'}}</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <div *ngIf='changePasswordModalOpen'>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Schimba Parola Principala</h5>
+          <button (click)="closeChangeModal()" type="button" class="btn-close" aria-label="Inchide"></button>
+        </div>
+        <div [formGroup]="changePasswordForm" class="form-group inputs">
+          <div class="input">
+            <input formControlName="password" class="col-md-10" [type]="revealMPass? 'text': 'password'"
+              placeholder="Parola" [type]="revealPass? 'text': 'password'">
+            <button (click)="revealMPassSwitch()" type="button" class='col-md-2 btn-primary'>
+              Afisaza</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="changePassword()" type="button" class="btn btn-danger">Schimba</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>

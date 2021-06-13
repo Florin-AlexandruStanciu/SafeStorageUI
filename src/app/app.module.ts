@@ -12,6 +12,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { BlockUIModule } from 'ng-block-ui';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
     }),
+    BlockUIModule.forRoot(),
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
