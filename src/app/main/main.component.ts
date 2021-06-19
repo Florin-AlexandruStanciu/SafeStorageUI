@@ -4,6 +4,7 @@ import { LocalStorageService } from 'ngx-webstorage';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-main',
@@ -24,6 +25,12 @@ export class MainComponent implements OnInit {
   credForm: FormGroup;
 
   stash: any;
+  newFile: File;
+  fileStash: any;
+
+  fileModalOpen = false;
+  selectedFile:any;
+
 
   revealMPass = false;
   changePasswordModalOpen = false;
@@ -43,17 +50,88 @@ export class MainComponent implements OnInit {
     }
   }
 
+
+  public onFileChanged(event) {
+    this.newFile = event.target.files[0];
+  }
+
+  onUpload() {
+    var reader = new FileReader();
+    var fileByteArray: Uint8Array;
+    this.blockUI.start("Se incarca fisierul...");
+    reader.readAsArrayBuffer(this.newFile);
+    reader.onloadend = (e) => {
+      let bytes = [];
+      fileByteArray = new Uint8Array(e.target.result as ArrayBuffer);
+      for (var i=0; i<fileByteArray.length; i++) {
+                bytes[i]=fileByteArray[i];
+            }
+      const fileDto = {
+          name:this.newFile.name,
+          type:this.newFile.type,
+          bytes:bytes
+        }
+        console.log(fileDto);
+        this.backend.saveFile({password:this.localstorage.retrieve("password"),fileDto:fileDto}).subscribe(
+          data=>{
+            this.blockUI.stop();
+            this.toastr.success(data);
+            this.refreshFileStash();
+          },
+          error=>{
+            this.toastr.error(error.error);
+            this.blockUI.stop();
+          }
+        );
+   };
+  }
+
+
+  openFileModal(name:string, id:number){
+    this.selectedFile = {name:name,id:id};
+    this.fileModalOpen = true;
+    this.closeAuthModal();
+    this.closeChangeModal();
+    this.closeCredModal();
+  }
+
+  getWholeFile(id:number){
+    this.backend.getWholeFile(this.localstorage.retrieve('password'),id)
+      .subscribe((response) => {
+        this.saveFile(response);
+        this.closeFileModal();
+      });
+  }
+
+  saveFile(response){
+    const retrievedFile = 'data:'+response.body.type+';base64,' + response.body.bytes;
+    saveAs(retrievedFile,response.body.name);
+  }
+
   saveCredentials(credentials) {
     this.backend.saveCredentials(
       credentials,
       this.localstorage.retrieve('password')
     ).subscribe(data => {
       this.closeCredModal();
-      this.refreshStash();
+      this.refreshCredentialStash();
       this.toastr.info(data);
     },
       error => {
         this.toastr.error(error.error);
+      }
+    );
+  }
+
+  deleteFile() {
+    this.backend.deleteFile(this.selectedFile.id).subscribe(data => {
+      this.toastr.info(data);
+      this.refreshFileStash();
+      this.closeFileModal();
+    },
+      error => {
+        this.toastr.error(error.error);
+        this.closeFileModal();
       }
     );
   }
@@ -63,7 +141,7 @@ export class MainComponent implements OnInit {
     console.log(this.credForm.value);
     this.backend.deleteCredentials(id).subscribe(data => {
       this.toastr.info(data);
-      this.refreshStash();
+      this.refreshCredentialStash();
       this.closeCredModal();
     },
       error => {
@@ -84,24 +162,39 @@ export class MainComponent implements OnInit {
     this.revealMPass = !this.revealMPass;
   }
 
+  closeFileModal() {
+    if(this.fileModalOpen){
+      this.fileModalOpen = false;
+      this.selectedFile = {name:'',id:0};
+    }
+  }
+
   closeCredModal() {
-    this.credModalOpen = false;
-    this.revealUser = false;
-    this.revealPass = false;
-    this.credForm.reset();
+    if(this.credModalOpen){
+      this.credModalOpen = false;
+      this.revealUser = false;
+      this.revealPass = false;
+      this.credForm.reset();
+    }
   }
   closeAuthModal() {
-
-    this.authModalOpen = false;
-    this.authForm.reset();
+    if(this.authModalOpen){
+      this.authModalOpen = false;
+      this.authForm.reset();
+    }
   }
 
   closeChangeModal() {
-    this.changePasswordModalOpen = false;
-    this.changePasswordForm.reset();
+    if(this.changePasswordModalOpen){
+      this.changePasswordModalOpen = false;
+      this.changePasswordForm.reset();
+    }
   }
 
   openSaveCredModal() {
+    this.closeAuthModal();
+    this.closeChangeModal();
+    this.closeFileModal();
     this.credModalMode = 'create';
     this.credForm = new FormGroup({
       id: new FormControl(-1),
@@ -113,6 +206,9 @@ export class MainComponent implements OnInit {
   }
 
   openViewCredModal(credentials: any) {
+    this.closeAuthModal();
+    this.closeChangeModal();
+    this.closeFileModal();
     this.credModalMode = 'view';
     this.credForm = new FormGroup({
       id: new FormControl(credentials.id),
@@ -169,7 +265,19 @@ export class MainComponent implements OnInit {
     );
   }
 
-  refreshStash() {
+  cutString(name:string){
+    if(name.length > 12){
+      return name.substring(0,12)+"...";
+    }
+    return name;
+  }
+
+  refreshStash(){
+    this.refreshCredentialStash();
+    this.refreshFileStash();
+  }
+
+  refreshCredentialStash() {
     this.blockUI.start('Se incarca credentialele...');
     this.backend.getStash(this.localstorage.retrieve('password')).subscribe(
       (data) => {
@@ -178,10 +286,19 @@ export class MainComponent implements OnInit {
     });
   }
 
+  refreshFileStash() {
+    this.blockUI.start('Se incarca fisierele...');
+    this.backend.getFiles(this.localstorage.retrieve('password')).subscribe(
+      (data) => {
+        this.fileStash = data;
+        this.blockUI.stop();
+    });
+  }
+
   logout() {
     this.localstorage.clear();
-    this.isLoggedIn = false;
     this.toastr.success("Deconectat cu succes");
+    location.reload();
   }
 
   createUser(credentials) {
@@ -199,6 +316,9 @@ export class MainComponent implements OnInit {
 
 
   openChangePasswordModal(){
+    this.closeAuthModal();
+    this.closeCredModal();
+    this.closeFileModal();
     this.changePasswordModalOpen = true;
     this.changePasswordForm = new FormGroup({
       password: new FormControl('')

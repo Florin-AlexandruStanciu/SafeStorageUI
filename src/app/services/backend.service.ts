@@ -32,4 +32,20 @@ export class BackendService {
     changePassword(oldPassword:string,newPassword:string){
       return this.httpclient.post("https://localhost:8080/safe-storage/changePassword",{oldPassword:oldPassword,newPassword:newPassword},{responseType:'text'});
     }
+
+    saveFile(saveFileDto:any){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/files/create",{password:saveFileDto.password,fileDto:saveFileDto.fileDto},{responseType:'text'});
+    }
+
+    getFiles(password:string){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/files/getAll",password);
+    }
+
+    getWholeFile(password:string, id:number){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/files/getWholeFile",{password:password,id:id},{ observe: 'response' });
+    }
+
+    deleteFile(id:number){
+      return this.httpclient.post("https://localhost:8080/safe-storage/stash/files/delete",id,{responseType:'text'});
+    }
 }
